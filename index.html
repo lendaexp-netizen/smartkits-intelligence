@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SmartKits Intelligence</title>
+<style>
+:root{
+  --bg:#0f1620; --card:#17212e; --card2:#1e2b3a; --line:#2a3a4d;
+  --tx:#e8eef5; --tx2:#9bb0c6; --ac:#31c48d; --ac2:#2f80ed;
+  --warn:#f0a83c; --bad:#ef5350; --good:#31c48d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.5}
+header{background:linear-gradient(135deg,#152233,#1b3049);border-bottom:1px solid var(--line);padding:18px 20px}
+.wrap{max-width:1180px;margin:0 auto}
+.brandline{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:46px;height:46px;border-radius:12px;background:var(--ac);color:#08221a;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex:0 0 auto}
+h1{margin:0;font-size:21px;letter-spacing:.2px}
+.sub{margin:2px 0 0;color:var(--tx2);font-size:13px}
+nav{background:var(--card);border-bottom:1px solid var(--line);padding:0 20px;
+  position:sticky;top:0;z-index:5;overflow-x:auto}
+nav .wrap{display:flex;gap:4px}
+nav button{background:none;border:none;border-bottom:3px solid transparent;color:var(--tx2);
+  padding:13px 15px;font-size:14px;cursor:pointer;white-space:nowrap;font-family:inherit}
+nav button:hover{color:var(--tx)}
+nav button[aria-selected="true"]{color:var(--ac);border-bottom-color:var(--ac);font-weight:600}
+main{padding:22px 20px 60px}
+section[hidden]{display:none}
+h2{font-size:17px;margin:0 0 4px}
+.hint{color:var(--tx2);font-size:13px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.card h3{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--tx2)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi .lb{color:var(--tx2);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .vl{font-size:26px;font-weight:700;margin-top:6px}
+.kpi .ft{color:var(--tx2);font-size:12px;margin-top:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--tx2);margin-bottom:5px}
+input,select,textarea{background:var(--card2);border:1px solid var(--line);color:var(--tx);
+  border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac2);outline-offset:1px}
+.f{flex:1 1 150px;min-width:120px}
+.f-sm{flex:0 0 110px}
+button.btn{background:var(--ac);color:#08221a;border:none;border-radius:8px;padding:10px 16px;
+  font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+button.btn:hover{filter:brightness(1.08)}
+button.btn.sec{background:var(--card2);color:var(--tx);border:1px solid var(--line)}
+button.btn.dim{background:none;color:var(--tx2);border:1px solid var(--line)}
+button.mini{background:none;border:1px solid var(--line);color:var(--tx2);border-radius:6px;
+  padding:4px 9px;font-size:12px;cursor:pointer;font-family:inherit}
+button.mini:hover{color:var(--tx);border-color:var(--ac2)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--card2);color:var(--tx2);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#1b2634}
+td.num,th.num{text-align:right}
+.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:600}
+.tag.good{background:rgba(49,196,141,.15);color:var(--good)}
+.tag.warn{background:rgba(240,168,60,.15);color:var(--warn)}
+.tag.bad{background:rgba(239,83,80,.15);color:var(--bad)}
+.tag.off{background:#243244;color:var(--tx2)}
+.empty{padding:28px;text-align:center;color:var(--tx2);font-size:14px}
+.note{background:rgba(47,128,237,.1);border:1px solid rgba(47,128,237,.35);border-radius:10px;
+  padding:12px 14px;font-size:13px;color:#cfe0f5;margin-bottom:16px}
+.note.warn{background:rgba(240,168,60,.1);border-color:rgba(240,168,60,.35);color:#f3ddb6}
+.note strong{color:#fff}
+.chart{width:100%;height:230px}
+.bar-lb{font-size:11px;fill:var(--tx2)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--tx2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+ul.docs{margin:0;padding-left:20px;font-size:14px;color:var(--tx2)}
+ul.docs li{margin-bottom:7px}
+ul.docs strong{color:var(--tx)}
+footer{border-top:1px solid var(--line);padding:16px 20px;color:var(--tx2);font-size:12px;text-align:center}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--card2);
+  border:1px solid var(--ac);border-radius:10px;padding:11px 20px;font-size:14px;
+  box-shadow:0 8px 26px rgba(0,0,0,.5);z-index:50}
+.toast[hidden]{display:none}
+.pill{font-size:11px;color:var(--tx2);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+@media(max-width:600px){.kpi .vl{font-size:21px}h1{font-size:18px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap brandline">
+    <div class="logo">SK</div>
+    <div>
+      <h1>SmartKits Intelligence</h1>
+      <p class="sub">Catálogo, preços de concorrentes e frete em um único painel</p>
+    </div>
+    <span class="pill" style="margin-left:auto">versão web · dados salvos no seu navegador</span>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap" id="tabs" role="tablist">
+    <button role="tab" data-tab="painel" aria-selected="true">Painel</button>
+    <button role="tab" data-tab="produtos" aria-selected="false">Produtos</button>
+    <button role="tab" data-tab="comparacao" aria-selected="false">Comparação de preços</button>
+    <button role="tab" data-tab="frete" aria-selected="false">Frete</button>
+    <button role="tab" data-tab="sistema" aria-selected="false">Sistema</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ================= PAINEL ================= -->
+  <section id="tab-painel">
+    <h2>Painel geral</h2>
+    <p class="hint">Visão consolidada do seu catálogo e da sua posição de preço no mercado.</p>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Preço médio por concorrente</h3>
+        <svg class="chart" id="chart-conc" role="img" aria-label="Preço médio por concorrente"></svg>
+      </div>
+      <div class="card">
+        <h3>Sua posição de preço</h3>
+        <svg class="chart" id="chart-pos" role="img" aria-label="Distribuição da posição de preço"></svg>
+        <div class="legend">
+          <span><i style="background:#31c48d"></i>Mais barato</span>
+          <span><i style="background:#f0a83c"></i>Competitivo</span>
+          <span><i style="background:#ef5350"></i>Mais caro</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Alertas — concorrente mais barato que você</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Produto</th><th class="num">Seu preço</th><th class="num">Menor do mercado</th>
+        <th>Onde</th><th class="num">Diferença</th></tr></thead>
+        <tbody id="tb-alertas"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ================= PRODUTOS ================= -->
+  <section id="tab-produtos" hidden>
+    <h2>Produtos</h2>
+    <p class="hint">Cadastre seu catálogo à mão ou importe de uma planilha em CSV.</p>
+    <div class="card">
+      <h3>Novo produto</h3>
+      <form id="form-produto">
+        <div class="row">
+          <div class="f" style="flex:2 1 220px"><label for="p-nome">Nome</label>
+            <input id="p-nome" required maxlength="120" placeholder="Kit Arduino Uno R3 completo" /></div>
+          <div class="f"><label for="p-sku">SKU</label>
+            <input id="p-sku" maxlength="40" placeholder="SK-1001" /></div>
+          <div class="f"><label for="p-cat">Categoria</label>
+            <input id="p-cat" maxlength="40" placeholder="Kits" /></div>
+          <div class="f f-sm"><label for="p-preco">Seu preço (R$)</label>
+            <input id="p-preco" type="number" step="0.01" min="0" required placeholder="189,90" /></div>
+          <div class="f f-sm"><label for="p-peso">Peso (kg)</label>
+            <input id="p-peso" type="number" step="0.01" min="0" placeholder="0.6" /></div>
+          <button class="btn" type="submit">Adicionar</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Catálogo <span id="cnt-prod" class="pill"></span></h3>
+      <div class="row">
+        <div class="f"><label for="busca">Buscar</label>
+          <input id="busca" placeholder="nome, SKU ou categoria" /></div>
+        <button class="btn sec" id="btn-demo" type="button">Carregar dados de exemplo</button>
+        <button class="btn sec" id="btn-csv" type="button">Importar CSV</button>
+        <button class="btn dim" id="btn-exp" type="button">Exportar CSV</button>
+        <input id="file-csv" type="file" accept=".csv,text/csv" hidden />
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Produto</th><th>SKU</th><th>Categoria</th><th class="num">Preço</th>
+        <th class="num">Peso</th><th></th></tr></thead>
+        <tbody id="tb-produtos"></tbody>
+      </table></div>
+      <p class="hint" style="margin:12px 0 0">CSV aceito: colunas <strong>nome, sku, categoria, preco, peso</strong> na primeira linha.</p>
+    </div>
+  </section>
+
+  <!-- ================= COMPARACAO ================= -->
+  <section id="tab-comparacao" hidden>
+    <h2>Comparação de preços</h2>
+    <p class="hint">Registre o preço que cada concorrente pratica e veja na hora se você está na frente.</p>
+    <div class="note warn" id="nota-scraping">
+      <strong>Atenção:</strong> esta versão não busca preços sozinha. Navegadores bloqueiam a leitura
+      automática de sites de terceiros, então a coleta é manual — você copia o preço do concorrente e
+      registra aqui. Todo o resto (comparação, alertas, gráficos, frete) funciona igual.
+    </div>
+    <div class="card">
+      <h3>Registrar preço de concorrente</h3>
+      <form id="form-preco">
+        <div class="row">
+          <div class="f" style="flex:2 1 220px"><label for="c-prod">Produto</label>
+            <select id="c-prod" required></select></div>
+          <div class="f"><label for="c-conc">Concorrente</label>
+            <select id="c-conc" required></select></div>
+          <div class="f f-sm"><label for="c-preco">Preço (R$)</label>
+            <input id="c-preco" type="number" step="0.01" min="0" required /></div>
+          <button class="btn" type="submit">Registrar</button>
+          <button class="btn sec" id="btn-simular" type="button">Gerar demonstração</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Comparativo</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Produto</th><th class="num">Seu preço</th><th class="num">Menor</th>
+        <th class="num">Médio</th><th class="num">Maior</th><th>Posição</th><th class="num">Ofertas</th><th></th></tr></thead>
+        <tbody id="tb-comparacao"></tbody>
+      </table></div>
+    </div>
+    <div class="card" id="box-ofertas" hidden>
+      <h3>Ofertas registradas — <span id="of-titulo"></span></h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Concorrente</th><th class="num">Preço</th><th class="num">vs. você</th><th>Registrado em</th><th></th></tr></thead>
+        <tbody id="tb-ofertas"></tbody>
+      </table></div>
+      <button class="btn dim" id="btn-fechar-of" type="button" style="margin-top:12px">Fechar</button>
+    </div>
+  </section>
+
+  <!-- ================= FRETE ================= -->
+  <section id="tab-frete" hidden>
+    <h2>Frete</h2>
+    <p class="hint">Estimativa de frete por peso e região de destino, para precificar com margem.</p>
+    <div class="note">
+      Os valores são uma <strong>estimativa de referência</strong> calculada por faixa de peso e distância,
+      no mesmo espírito do modo simulado do sistema original. Para valores oficiais, confirme na transportadora.
+    </div>
+    <div class="card">
+      <h3>Cotar</h3>
+      <form id="form-frete">
+        <div class="row">
+          <div class="f"><label for="fr-prod">Produto (opcional)</label>
+            <select id="fr-prod"></select></div>
+          <div class="f f-sm"><label for="fr-peso">Peso (kg)</label>
+            <input id="fr-peso" type="number" step="0.01" min="0.01" value="0.6" required /></div>
+          <div class="f f-sm"><label for="fr-origem">CEP origem</label>
+            <input id="fr-origem" value="01001-000" maxlength="9" /></div>
+          <div class="f f-sm"><label for="fr-destino">CEP destino</label>
+            <input id="fr-destino" placeholder="70000-000" maxlength="9" required /></div>
+          <button class="btn" type="submit">Calcular</button>
+        </div>
+      </form>
+      <div id="res-frete"></div>
+    </div>
+    <div class="card">
+      <h3>Histórico de cotações</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Quando</th><th>Destino</th><th class="num">Peso</th><th>Mais barato</th><th class="num">Valor</th></tr></thead>
+        <tbody id="tb-fretes"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ================= SISTEMA ================= -->
+  <section id="tab-sistema" hidden>
+    <h2>Sistema</h2>
+    <p class="hint">Concorrentes monitorados, seus dados e o que muda nesta versão web.</p>
+    <div class="card">
+      <h3>Concorrentes</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Concorrente</th><th>Site</th><th class="num">Ofertas registradas</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-conc"></tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>Seus dados</h3>
+      <p class="hint">Tudo fica salvo apenas neste navegador, neste computador. Nada é enviado para a internet.
+        Faça backup exportando o arquivo abaixo.</p>
+      <div class="row">
+        <button class="btn sec" id="btn-backup" type="button">Exportar backup (JSON)</button>
+        <button class="btn sec" id="btn-restore" type="button">Restaurar backup</button>
+        <button class="btn dim" id="btn-zerar" type="button">Apagar tudo</button>
+        <input id="file-json" type="file" accept=".json,application/json" hidden />
+      </div>
+    </div>
+    <div class="card">
+      <h3>O que roda aqui e o que precisa de servidor</h3>
+      <ul class="docs">
+        <li><strong>Funciona nesta versão:</strong> catálogo, importação e exportação em CSV, comparação
+          de preços, posição de mercado, alertas, gráficos, estimativa de frete e histórico.</li>
+        <li><strong>Precisa do servidor original:</strong> importar o catálogo automaticamente do site,
+          buscar preços nos concorrentes sozinho, cotação real da Melhor Envio, banco compartilhado entre
+          várias pessoas e coleta agendada.</li>
+        <li><strong>Por quê:</strong> o GitHub Pages entrega apenas páginas; ele não executa Python nem guarda
+          banco de dados. E o navegador, por segurança, impede que uma página leia o conteúdo de outro site.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>SmartKits Intelligence — versão estática para GitHub Pages · dados locais no navegador</footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+'use strict';
+
+// ---------- estado ----------
+var KEY = 'smartkits-intelligence-v1';
+var CONCORRENTES = [
+  { id: 'filipeflop', nome: 'FilipeFlop', site: 'filipeflop.com' },
+  { id: 'robocore', nome: 'RoboCore', site: 'robocore.net' },
+  { id: 'usinainfo', nome: 'UsinaInfo', site: 'usinainfo.com.br' },
+  { id: 'baudaeletronica', nome: 'Bau da Eletronica', site: 'baudaeletronica.com.br' },
+  { id: 'eletrogate', nome: 'Eletrogate', site: 'eletrogate.com' },
+  { id: 'mercadolivre', nome: 'Mercado Livre', site: 'mercadolivre.com.br' },
+  { id: 'amazon', nome: 'Amazon Brasil', site: 'amazon.com.br' },
+  { id: 'aliexpress', nome: 'AliExpress Brasil', site: 'pt.aliexpress.com' }
+];
+var DEMO = [
+  { nome: 'Kit Arduino Uno R3 Completo', sku: 'SK-1001', categoria: 'Kits', preco: 189.9, peso: 0.6 },
+  { nome: 'Raspberry Pi 4 Model B 4GB', sku: 'SK-1002', categoria: 'Placas', preco: 549.0, peso: 0.35 },
+  { nome: 'Sensor Ultrassonico HC-SR04', sku: 'SK-1003', categoria: 'Sensores', preco: 17.5, peso: 0.05 },
+  { nome: 'Modulo Wi-Fi ESP32 DevKit V1', sku: 'SK-1004', categoria: 'Placas', preco: 64.9, peso: 0.08 },
+  { nome: 'Display OLED 0.96 I2C', sku: 'SK-1005', categoria: 'Displays', peso: 0.04, preco: 32.9 },
+  { nome: 'Kit Robotica Educacional 4WD', sku: 'SK-1006', categoria: 'Kits', preco: 329.0, peso: 1.4 },
+  { nome: 'Servo Motor MG996R Metalico', sku: 'SK-1007', categoria: 'Motores', preco: 48.9, peso: 0.12 },
+  { nome: 'Fonte Ajustavel Protoboard', sku: 'SK-1008', categoria: 'Acessorios', preco: 24.9, peso: 0.09 }
+];
+
+var db = { produtos: [], precos: [], fretes: [], desativados: [] };
+var produtoAberto = null;
+
+function carregar() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var o = JSON.parse(raw);
+      db.produtos = Array.isArray(o.produtos) ? o.produtos : [];
+      db.precos = Array.isArray(o.precos) ? o.precos : [];
+      db.fretes = Array.isArray(o.fretes) ? o.fretes : [];
+      db.desativados = Array.isArray(o.desativados) ? o.desativados : [];
+    }
+  } catch (e) { /* estado corrompido: comeca vazio */ }
+}
+function salvar() {
+  try { localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch (e) { aviso('Nao consegui salvar: armazenamento do navegador cheio ou bloqueado.'); }
+}
+
+// ---------- utilidades ----------
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function brl(v) {
+  if (v == null || isNaN(v)) return '\u2014';
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function pct(v) { return (v > 0 ? '+' : '') + v.toFixed(1) + '%'; }
+function dataBR(iso) {
+  var d = new Date(iso);
+  if (isNaN(d)) return '\u2014';
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+function nomeConc(id) {
+  for (var i = 0; i < CONCORRENTES.length; i++) if (CONCORRENTES[i].id === id) return CONCORRENTES[i].nome;
+  return id;
+}
+function el(id) { return document.getElementById(id); }
+var toastTimer = null;
+function aviso(msg) {
+  var t = el('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.hidden = true; }, 3200);
+}
+
+// ---------- calculo de comparacao ----------
+function ofertasDe(pid) {
+  return db.precos.filter(function (p) {
+    return p.produtoId === pid && db.desativados.indexOf(p.concorrente) === -1;
+  });
+}
+function comparar(prod) {
+  var ofs = ofertasDe(prod.id);
+  if (!ofs.length) return { prod: prod, n: 0, min: null, med: null, max: null, pos: 'sem-dados', ofs: ofs };
+  var vals = ofs.map(function (o) { return o.preco; });
+  var min = Math.min.apply(null, vals);
+  var max = Math.max.apply(null, vals);
+  var med = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+  var pos;
+  if (prod.preco < min) pos = 'mais-barato';
+  else if (prod.preco > max) pos = 'mais-caro';
+  else pos = 'competitivo';
+  var barato = null;
+  for (var i = 0; i < ofs.length; i++) if (ofs[i].preco === min) barato = ofs[i].concorrente;
+  return { prod: prod, n: ofs.length, min: min, med: med, max: max, pos: pos, barato: barato, ofs: ofs };
+}
+function todasComparacoes() { return db.produtos.map(comparar); }
+var TAGS = {
+  'mais-barato': ['good', 'Mais barato'],
+  'competitivo': ['warn', 'Competitivo'],
+  'mais-caro': ['bad', 'Mais caro'],
+  'sem-dados': ['off', 'Sem dados']
+};
+function tagPos(pos) {
+  var t = TAGS[pos] || TAGS['sem-dados'];
+  return '<span class="tag ' + t[0] + '">' + t[1] + '</span>';
+}
+
+// ---------- painel ----------
+function renderPainel() {
+  var comps = todasComparacoes();
+  var comDados = comps.filter(function (c) { return c.n > 0; });
+  var alertas = comDados.filter(function (c) { return c.min < c.prod.preco; });
+  var soma = db.produtos.reduce(function (a, p) { return a + p.preco; }, 0);
+  var econ = 0;
+  for (var i = 0; i < comDados.length; i++) {
+    if (comDados[i].med) econ += (comDados[i].med - comDados[i].prod.preco) / comDados[i].med * 100;
+  }
+  var vantagem = comDados.length ? econ / comDados.length : null;
+
+  var kpis = [
+    ['Produtos no catalogo', db.produtos.length, db.produtos.length ? 'valor total ' + brl(soma) : 'cadastre ou importe'],
+    ['Ofertas registradas', db.precos.length, comDados.length + ' produto(s) comparado(s)'],
+    ['Alertas de preco', alertas.length, alertas.length ? 'concorrente mais barato' : 'nenhum concorrente abaixo'],
+    ['Vantagem media', vantagem == null ? '\u2014' : pct(vantagem), 'vs. preco medio do mercado']
+  ];
+  el('kpis').innerHTML = kpis.map(function (k) {
+    return '<div class="kpi"><div class="lb">' + esc(k[0]) + '</div><div class="vl">' +
+      esc(k[1]) + '</div><div class="ft">' + esc(k[2]) + '</div></div>';
+  }).join('');
+
+  // alertas
+  var tb = el('tb-alertas');
+  if (!alertas.length) {
+    tb.innerHTML = '<tr><td colspan="5" class="empty">Nenhum alerta. Registre precos de concorrentes na aba Comparacao.</td></tr>';
+  } else {
+    alertas.sort(function (a, b) { return (a.min - a.prod.preco) - (b.min - b.prod.preco); });
+    tb.innerHTML = alertas.map(function (c) {
+      var dif = (c.min - c.prod.preco) / c.prod.preco * 100;
+      return '<tr><td>' + esc(c.prod.nome) + '</td><td class="num">' + brl(c.prod.preco) +
+        '</td><td class="num">' + brl(c.min) + '</td><td>' + esc(nomeConc(c.barato)) +
+        '</td><td class="num"><span class="tag bad">' + pct(dif) + '</span></td></tr>';
+    }).join('');
+  }
+
+  graficoConcorrentes();
+  graficoPosicao(comps);
+}
+
+function svgVazio(svg, msg) {
+  svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#9bb0c6" font-size="13">' + esc(msg) + '</text>';
+}
+
+function graficoConcorrentes() {
+  var svg = el('chart-conc');
+  var mapa = {};
+  db.precos.forEach(function (p) {
+    if (db.desativados.indexOf(p.concorrente) !== -1) return;
+    if (!mapa[p.concorrente]) mapa[p.concorrente] = [];
+    mapa[p.concorrente].push(p.preco);
+  });
+  var dados = Object.keys(mapa).map(function (k) {
+    var v = mapa[k];
+    return { id: k, media: v.reduce(function (a, b) { return a + b; }, 0) / v.length, n: v.length };
+  }).sort(function (a, b) { return b.media - a.media; });
+
+  if (!dados.length) { svgVazio(svg, 'Sem ofertas registradas ainda'); return; }
+
+  var W = 560, H = 230, padL = 130, padR = 60, padT = 10, padB = 10;
+  var bh = Math.min(26, (H - padT - padB) / dados.length - 6);
+  var maxV = Math.max.apply(null, dados.map(function (d) { return d.media; })) || 1;
+  var largura = W - padL - padR;
+  var out = '';
+  dados.forEach(function (d, i) {
+    var y = padT + i * ((H - padT - padB) / dados.length);
+    var w = Math.max(2, d.media / maxV * largura);
+    out += '<text x="' + (padL - 8) + '" y="' + (y + bh * 0.72) + '" text-anchor="end" class="bar-lb">' +
+      esc(nomeConc(d.id)) + '</text>';
+    out += '<rect x="' + padL + '" y="' + y + '" width="' + w + '" height="' + bh +
+      '" rx="4" fill="#2f80ed" opacity="0.85"></rect>';
+    out += '<text x="' + (padL + w + 6) + '" y="' + (y + bh * 0.72) + '" class="bar-lb">' +
+      esc(brl(d.media)) + '</text>';
+  });
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.innerHTML = out;
+}
+
+function graficoPosicao(comps) {
+  var svg = el('chart-pos');
+  var c = { 'mais-barato': 0, 'competitivo': 0, 'mais-caro': 0 };
+  comps.forEach(function (x) { if (x.n > 0) c[x.pos]++; });
+  var total = c['mais-barato'] + c['competitivo'] + c['mais-caro'];
+  if (!total) { svgVazio(svg, 'Sem comparacoes ainda'); return; }
+
+  var W = 360, H = 230, cx = 118, cy = 112, r = 84, ri = 46;
+  var cores = { 'mais-barato': '#31c48d', 'competitivo': '#f0a83c', 'mais-caro': '#ef5350' };
+  var ang = -Math.PI / 2, out = '';
+  ['mais-barato', 'competitivo', 'mais-caro'].forEach(function (k) {
+    if (!c[k]) return;
+    var frac = c[k] / total, a2 = ang + frac * Math.PI * 2;
+    var big = frac > 0.5 ? 1 : 0;
+    if (frac >= 0.9999) {
+      out += '<circle cx="' + cx + '" cy="' + cy + '" r="' + ((r + ri) / 2) +
+        '" fill="none" stroke="' + cores[k] + '" stroke-width="' + (r - ri) + '"></circle>';
+    } else {
+      var x1 = cx + r * Math.cos(ang), y1 = cy + r * Math.sin(ang);
+      var x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+      var x3 = cx + ri * Math.cos(a2), y3 = cy + ri * Math.sin(a2);
+      var x4 = cx + ri * Math.cos(ang), y4 = cy + ri * Math.sin(ang);
+      out += '<path d="M' + x1 + ' ' + y1 + ' A' + r + ' ' + r + ' 0 ' + big + ' 1 ' + x2 + ' ' + y2 +
+        ' L' + x3 + ' ' + y3 + ' A' + ri + ' ' + ri + ' 0 ' + big + ' 0 ' + x4 + ' ' + y4 +
+        ' Z" fill="' + cores[k] + '" opacity="0.9"></path>';
+    }
+    ang = a2;
+  });
+  out += '<text x="' + cx + '" y="' + (cy - 2) + '" text-anchor="middle" fill="#e8eef5" font-size="24" font-weight="700">' +
+    total + '</text>';
+  out += '<text x="' + cx + '" y="' + (cy + 16) + '" text-anchor="middle" fill="#9bb0c6" font-size="11">produtos</text>';
+  var ly = 58;
+  ['mais-barato', 'competitivo', 'mais-caro'].forEach(function (k) {
+    var lb = TAGS[k][1];
+    out += '<rect x="228" y="' + (ly - 9) + '" width="10" height="10" rx="3" fill="' + cores[k] + '"></rect>';
+    out += '<text x="244" y="' + ly + '" class="bar-lb">' + esc(lb) + ': ' + c[k] + '</text>';
+    ly += 24;
+  });
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.innerHTML = out;
+}
+
+// ---------- produtos ----------
+function renderProdutos() {
+  var termo = el('busca').value.trim().toLowerCase();
+  var lista = db.produtos.filter(function (p) {
+    if (!termo) return true;
+    return (p.nome + ' ' + (p.sku || '') + ' ' + (p.categoria || '')).toLowerCase().indexOf(termo) !== -1;
+  });
+  el('cnt-prod').textContent = db.produtos.length + ' produto(s)';
+  var tb = el('tb-produtos');
+  if (!lista.length) {
+    tb.innerHTML = '<tr><td colspan="6" class="empty">' +
+      (db.produtos.length ? 'Nada encontrado para essa busca.' : 'Catalogo vazio. Adicione um produto, importe um CSV ou carregue os dados de exemplo.') +
+      '</td></tr>';
+  } else {
+    tb.innerHTML = lista.map(function (p) {
+      return '<tr><td>' + esc(p.nome) + '</td><td>' + esc(p.sku || '\u2014') + '</td><td>' +
+        esc(p.categoria || '\u2014') + '</td><td class="num">' + brl(p.preco) + '</td><td class="num">' +
+        (p.peso ? p.peso + ' kg' : '\u2014') + '</td>' +
+        '<td class="num"><button class="mini" data-del="' + esc(p.id) + '">Remover</button></td></tr>';
+    }).join('');
+  }
+  preencherSelects();
+}
+
+function preencherSelects() {
+  var opts = db.produtos.map(function (p) {
+    return '<option value="' + esc(p.id) + '">' + esc(p.nome) + ' \u2014 ' + brl(p.preco) + '</option>';
+  }).join('');
+  var cp = el('c-prod');
+  var atual = cp.value;
+  cp.innerHTML = opts || '<option value="">Cadastre um produto primeiro</option>';
+  if (atual) cp.value = atual;
+  var fp = el('fr-prod');
+  var atualF = fp.value;
+  fp.innerHTML = '<option value="">Informar peso manualmente</option>' + opts;
+  if (atualF) fp.value = atualF;
+  el('c-conc').innerHTML = CONCORRENTES.map(function (c) {
+    return '<option value="' + c.id + '">' + esc(c.nome) + '</option>';
+  }).join('');
+}
+
+// ---------- comparacao ----------
+function renderComparacao() {
+  var comps = todasComparacoes();
+  var tb = el('tb-comparacao');
+  if (!comps.length) {
+    tb.innerHTML = '<tr><td colspan="8" class="empty">Cadastre produtos na aba Produtos para comparar.</td></tr>';
+  } else {
+    tb.innerHTML = comps.map(function (c) {
+      return '<tr><td>' + esc(c.prod.nome) + '</td><td class="num">' + brl(c.prod.preco) +
+        '</td><td class="num">' + brl(c.min) + '</td><td class="num">' + brl(c.med) +
+        '</td><td class="num">' + brl(c.max) + '</td><td>' + tagPos(c.pos) +
+        '</td><td class="num">' + c.n + '</td><td class="num">' +
+        (c.n ? '<button class="mini" data-ver="' + esc(c.prod.id) + '">Ver ofertas</button>' : '') +
+        '</td></tr>';
+    }).join('');
+  }
+  if (produtoAberto) renderOfertas(produtoAberto);
+}
+
+function renderOfertas(pid) {
+  var prod = null;
+  for (var i = 0; i < db.produtos.length; i++) if (db.produtos[i].id === pid) prod = db.produtos[i];
+  if (!prod) { el('box-ofertas').hidden = true; produtoAberto = null; return; }
+  produtoAberto = pid;
+  el('of-titulo').textContent = prod.nome;
+  el('box-ofertas').hidden = false;
+  var ofs = db.precos.filter(function (p) { return p.produtoId === pid; })
+    .sort(function (a, b) { return a.preco - b.preco; });
+  var tb = el('tb-ofertas');
+  if (!ofs.length) {
+    tb.innerHTML = '<tr><td colspan="5" class="empty">Nenhuma oferta registrada para este produto.</td></tr>';
+    return;
+  }
+  tb.innerHTML = ofs.map(function (o) {
+    var dif = (o.preco - prod.preco) / prod.preco * 100;
+    var cls = dif < 0 ? 'bad' : 'good';
+    return '<tr><td>' + esc(nomeConc(o.concorrente)) + '</td><td class="num">' + brl(o.preco) +
+      '</td><td class="num"><span class="tag ' + cls + '">' + pct(dif) + '</span></td><td>' +
+      esc(dataBR(o.data)) + '</td><td class="num"><button class="mini" data-delof="' + esc(o.id) +
+      '">Remover</button></td></tr>';
+  }).join('');
+}
+
+// ---------- frete ----------
+var TRANSP = [
+  { nome: 'PAC (economico)', base: 18.5, kg: 7.2, dias: 8, fator: 1 },
+  { nome: 'SEDEX (rapido)', base: 29.9, kg: 12.4, dias: 3, fator: 1 },
+  { nome: 'Transportadora Jadlog', base: 16.9, kg: 6.4, dias: 6, fator: 1 },
+  { nome: 'Loggi', base: 21.4, kg: 8.1, dias: 4, fator: 1 }
+];
+function regiaoCep(cep) {
+  var d = parseInt(String(cep).replace(/\D/g, '').slice(0, 1), 10);
+  var mapa = ['Grande SP / interior SP', 'Interior SP', 'RJ / ES', 'MG', 'BA / SE',
+    'PE / AL / PB / RN', 'CE / PI / MA / PA / AM / AC / AP / RR', 'DF / GO / TO / MT / MS / RO',
+    'PR / SC', 'RS'];
+  return isNaN(d) ? 'Destino nao identificado' : mapa[d];
+}
+function cotar(peso, origem, destino) {
+  var o = parseInt(String(origem).replace(/\D/g, '').slice(0, 1), 10);
+  var d = parseInt(String(destino).replace(/\D/g, '').slice(0, 1), 10);
+  if (isNaN(o)) o = 0;
+  if (isNaN(d)) d = 0;
+  var dist = Math.abs(o - d);
+  var multDist = 1 + dist * 0.14;
+  var multPeso = Math.max(0.3, peso);
+  return TRANSP.map(function (t) {
+    var valor = (t.base + t.kg * multPeso) * multDist;
+    var prazo = Math.round(t.dias + dist * 0.9);
+    return { nome: t.nome, valor: Math.round(valor * 100) / 100, prazo: prazo };
+  }).sort(function (a, b) { return a.valor - b.valor; });
+}
+function renderFretes() {
+  var tb = el('tb-fretes');
+  if (!db.fretes.length) {
+    tb.innerHTML = '<tr><td colspan="5" class="empty">Nenhuma cotacao feita ainda.</td></tr>';
+    return;
+  }
+  tb.innerHTML = db.fretes.slice().reverse().slice(0, 30).map(function (f) {
+    return '<tr><td>' + esc(dataBR(f.data)) + '</td><td>' + esc(f.destino) + '</td><td class="num">' +
+      f.peso + ' kg</td><td>' + esc(f.melhor) + '</td><td class="num">' + brl(f.valor) + '</td></tr>';
+  }).join('');
+}
+
+// ---------- sistema ----------
+function renderSistema() {
+  var tb = el('tb-conc');
+  tb.innerHTML = CONCORRENTES.map(function (c) {
+    var n = db.precos.filter(function (p) { return p.concorrente === c.id; }).length;
+    var off = db.desativados.indexOf(c.id) !== -1;
+    return '<tr><td>' + esc(c.nome) + '</td><td>' + esc(c.site) + '</td><td class="num">' + n +
+      '</td><td>' + (off ? '<span class="tag off">Desativado</span>' : '<span class="tag good">Ativo</span>') +
+      '</td><td class="num"><button class="mini" data-toggle="' + c.id + '">' +
+      (off ? 'Ativar' : 'Desativar') + '</button></td></tr>';
+  }).join('');
+}
+
+// ---------- render geral ----------
+function renderTudo() {
+  renderProdutos();
+  renderComparacao();
+  renderFretes();
+  renderSistema();
+  renderPainel();
+}
+
+// ---------- abas ----------
+var TABS = ['painel', 'produtos', 'comparacao', 'frete', 'sistema'];
+function abrirAba(nome) {
+  TABS.forEach(function (t) { el('tab-' + t).hidden = (t !== nome); });
+  var bts = el('tabs').querySelectorAll('button');
+  for (var i = 0; i < bts.length; i++) {
+    bts[i].setAttribute('aria-selected', bts[i].getAttribute('data-tab') === nome ? 'true' : 'false');
+  }
+}
+el('tabs').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-tab]');
+  if (b) abrirAba(b.getAttribute('data-tab'));
+});
+
+// ---------- eventos: produtos ----------
+el('form-produto').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  var nome = el('p-nome').value.trim();
+  var preco = parseFloat(el('p-preco').value);
+  if (!nome || isNaN(preco)) { aviso('Informe ao menos nome e preco.'); return; }
+  db.produtos.push({
+    id: uid(), nome: nome, sku: el('p-sku').value.trim(),
+    categoria: el('p-cat').value.trim(), preco: preco,
+    peso: parseFloat(el('p-peso').value) || 0
+  });
+  salvar();
+  this.reset();
+  renderTudo();
+  aviso('Produto adicionado.');
+});
+
+el('busca').addEventListener('input', renderProdutos);
+
+el('tb-produtos').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-del]');
+  if (!b) return;
+  var id = b.getAttribute('data-del');
+  db.produtos = db.produtos.filter(function (p) { return p.id !== id; });
+  db.precos = db.precos.filter(function (p) { return p.produtoId !== id; });
+  if (produtoAberto === id) { produtoAberto = null; el('box-ofertas').hidden = true; }
+  salvar();
+  renderTudo();
+  aviso('Produto removido.');
+});
+
+el('btn-demo').addEventListener('click', function () {
+  DEMO.forEach(function (d) {
+    var existe = db.produtos.some(function (p) { return p.sku && p.sku === d.sku; });
+    if (!existe) db.produtos.push({
+      id: uid(), nome: d.nome, sku: d.sku, categoria: d.categoria, preco: d.preco, peso: d.peso
+    });
+  });
+  salvar();
+  renderTudo();
+  aviso('Dados de exemplo carregados.');
+});
+
+// CSV
+function parseCSV(txt) {
+  var linhas = txt.replace(/\r/g, '').split('\n').filter(function (l) { return l.trim(); });
+  if (!linhas.length) return [];
+  var sep = (linhas[0].split(';').length > linhas[0].split(',').length) ? ';' : ',';
+  var head = linhas[0].split(sep).map(function (h) {
+    return h.trim().toLowerCase().replace(/^"|"$/g, '').replace(/[\u00e7]/g, 'c').replace(/[\u00e1\u00e3\u00e2]/g, 'a').replace(/[\u00e9\u00ea]/g, 'e').replace(/[\u00ed]/g, 'i').replace(/[\u00f3\u00f5\u00f4]/g, 'o').replace(/[\u00fa]/g, 'u');
+  });
+  function idx() {
+    for (var i = 0; i < arguments.length; i++) {
+      var p = head.indexOf(arguments[i]);
+      if (p !== -1) return p;
+    }
+    return -1;
+  }
+  var iN = idx('nome', 'produto', 'titulo'), iS = idx('sku', 'codigo'),
+    iC = idx('categoria'), iP = idx('preco', 'valor'), iW = idx('peso');
+  var out = [];
+  for (var i = 1; i < linhas.length; i++) {
+    var col = linhas[i].split(sep).map(function (c) { return c.trim().replace(/^"|"$/g, ''); });
+    var nome = iN > -1 ? col[iN] : col[0];
+    if (!nome) continue;
+    var precoTxt = (iP > -1 ? col[iP] : '0').replace(/[^0-9,.\-]/g, '');
+    if (precoTxt.indexOf(',') > -1 && precoTxt.lastIndexOf(',') > precoTxt.lastIndexOf('.')) {
+      precoTxt = precoTxt.replace(/\./g, '').replace(',', '.');
+    }
+    var preco = parseFloat(precoTxt);
+    if (isNaN(preco)) preco = 0;
+    var pesoTxt = (iW > -1 ? col[iW] : '0').replace(',', '.').replace(/[^0-9.]/g, '');
+    out.push({
+      id: uid(), nome: nome, sku: iS > -1 ? (col[iS] || '') : '',
+      categoria: iC > -1 ? (col[iC] || '') : '', preco: preco, peso: parseFloat(pesoTxt) || 0
+    });
+  }
+  return out;
+}
+el('btn-csv').addEventListener('click', function () { el('file-csv').click(); });
+el('file-csv').addEventListener('change', function (ev) {
+  var f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  var fr = new FileReader();
+  fr.onload = function () {
+    var novos = parseCSV(String(fr.result));
+    if (!novos.length) { aviso('Nao encontrei produtos nesse arquivo.'); return; }
+    db.produtos = db.produtos.concat(novos);
+    salvar();
+    renderTudo();
+    aviso(novos.length + ' produto(s) importado(s).');
+  };
+  fr.onerror = function () { aviso('Nao consegui ler o arquivo.'); };
+  fr.readAsText(f, 'UTF-8');
+  ev.target.value = '';
+});
+
+function baixar(nomeArq, conteudo, tipo) {
+  var blob = new Blob([conteudo], { type: tipo });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = nomeArq;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+el('btn-exp').addEventListener('click', function () {
+  if (!db.produtos.length) { aviso('Catalogo vazio.'); return; }
+  var linhas = ['nome,sku,categoria,preco,peso'];
+  db.produtos.forEach(function (p) {
+    linhas.push(['"' + p.nome.replace(/"/g, '""') + '"', p.sku, p.categoria, p.preco, p.peso].join(','));
+  });
+  baixar('smartkits-produtos.csv', '\ufeff' + linhas.join('\n'), 'text/csv;charset=utf-8');
+});
+
+// ---------- eventos: comparacao ----------
+el('form-preco').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  var pid = el('c-prod').value;
+  var preco = parseFloat(el('c-preco').value);
+  if (!pid) { aviso('Cadastre um produto primeiro.'); return; }
+  if (isNaN(preco) || preco <= 0) { aviso('Informe um preco valido.'); return; }
+  var conc = el('c-conc').value;
+  db.precos = db.precos.filter(function (p) {
+    return !(p.produtoId === pid && p.concorrente === conc);
+  });
+  db.precos.push({ id: uid(), produtoId: pid, concorrente: conc, preco: preco, data: new Date().toISOString() });
+  salvar();
+  el('c-preco').value = '';
+  renderTudo();
+  aviso('Preco registrado.');
+});
+
+el('btn-simular').addEventListener('click', function () {
+  if (!db.produtos.length) { aviso('Cadastre produtos ou carregue os dados de exemplo.'); return; }
+  var criados = 0;
+  db.produtos.forEach(function (p) {
+    CONCORRENTES.forEach(function (c) {
+      if (Math.random() < 0.35) return;
+      var variacao = 1 + (Math.random() * 0.5 - 0.22);
+      var preco = Math.round(p.preco * variacao * 100) / 100;
+      db.precos = db.precos.filter(function (x) {
+        return !(x.produtoId === p.id && x.concorrente === c.id);
+      });
+      db.precos.push({
+        id: uid(), produtoId: p.id, concorrente: c.id, preco: preco,
+        data: new Date().toISOString(), simulado: true
+      });
+      criados++;
+    });
+  });
+  salvar();
+  renderTudo();
+  aviso(criados + ' oferta(s) de demonstracao geradas.');
+});
+
+el('tb-comparacao').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-ver]');
+  if (b) renderOfertas(b.getAttribute('data-ver'));
+});
+el('tb-ofertas').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-delof]');
+  if (!b) return;
+  var id = b.getAttribute('data-delof');
+  db.precos = db.precos.filter(function (p) { return p.id !== id; });
+  salvar();
+  renderTudo();
+});
+el('btn-fechar-of').addEventListener('click', function () {
+  produtoAberto = null;
+  el('box-ofertas').hidden = true;
+});
+
+// ---------- eventos: frete ----------
+el('fr-prod').addEventListener('change', function () {
+  var id = this.value;
+  for (var i = 0; i < db.produtos.length; i++) {
+    if (db.produtos[i].id === id && db.produtos[i].peso) el('fr-peso').value = db.produtos[i].peso;
+  }
+});
+el('form-frete').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  var peso = parseFloat(el('fr-peso').value);
+  var destino = el('fr-destino').value.trim();
+  if (isNaN(peso) || peso <= 0) { aviso('Informe um peso valido.'); return; }
+  if (String(destino).replace(/\D/g, '').length < 5) { aviso('Informe um CEP de destino valido.'); return; }
+  var opcoes = cotar(peso, el('fr-origem').value, destino);
+  var html = '<div class="tablewrap" style="margin-top:6px"><table><thead><tr><th>Servico</th>' +
+    '<th class="num">Valor</th><th class="num">Prazo</th></tr></thead><tbody>';
+  opcoes.forEach(function (o, i) {
+    html += '<tr><td>' + esc(o.nome) + (i === 0 ? ' <span class="tag good">mais barato</span>' : '') +
+      '</td><td class="num">' + brl(o.valor) + '</td><td class="num">' + o.prazo + ' dia(s) uteis</td></tr>';
+  });
+  html += '</tbody></table></div><p class="hint" style="margin:10px 0 0">Destino estimado: ' +
+    esc(regiaoCep(destino)) + '</p>';
+  el('res-frete').innerHTML = html;
+  db.fretes.push({
+    id: uid(), data: new Date().toISOString(), destino: destino, peso: peso,
+    melhor: opcoes[0].nome, valor: opcoes[0].valor
+  });
+  if (db.fretes.length > 200) db.fretes = db.fretes.slice(-200);
+  salvar();
+  renderFretes();
+});
+
+// ---------- eventos: sistema ----------
+el('tb-conc').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-toggle]');
+  if (!b) return;
+  var id = b.getAttribute('data-toggle');
+  var i = db.desativados.indexOf(id);
+  if (i === -1) db.desativados.push(id); else db.desativados.splice(i, 1);
+  salvar();
+  renderTudo();
+});
+el('btn-backup').addEventListener('click', function () {
+  baixar('smartkits-backup.json', JSON.stringify(db, null, 2), 'application/json');
+  aviso('Backup baixado.');
+});
+el('btn-restore').addEventListener('click', function () { el('file-json').click(); });
+el('file-json').addEventListener('change', function (ev) {
+  var f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  var fr = new FileReader();
+  fr.onload = function () {
+    try {
+      var o = JSON.parse(String(fr.result));
+      db.produtos = Array.isArray(o.produtos) ? o.produtos : [];
+      db.precos = Array.isArray(o.precos) ? o.precos : [];
+      db.fretes = Array.isArray(o.fretes) ? o.fretes : [];
+      db.desativados = Array.isArray(o.desativados) ? o.desativados : [];
+      salvar();
+      renderTudo();
+      aviso('Backup restaurado.');
+    } catch (e) { aviso('Arquivo de backup invalido.'); }
+  };
+  fr.readAsText(f, 'UTF-8');
+  ev.target.value = '';
+});
+el('btn-zerar').addEventListener('click', function () {
+  if (!confirm('Apagar todos os produtos, precos e cotacoes deste navegador?')) return;
+  db = { produtos: [], precos: [], fretes: [], desativados: [] };
+  produtoAberto = null;
+  el('box-ofertas').hidden = true;
+  el('res-frete').innerHTML = '';
+  salvar();
+  renderTudo();
+  aviso('Dados apagados.');
+});
+
+// ---------- inicio ----------
+carregar();
+renderTudo();
+
+</script>
+</body>
+</html>
